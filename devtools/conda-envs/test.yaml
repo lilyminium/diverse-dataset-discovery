@@ -1,0 +1,10 @@
+name: discoset-test
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+
+  # QC
+  - openff-toolkit
+  - rdkit

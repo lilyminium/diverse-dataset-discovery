@@ -1,0 +1,18 @@
+name: discoset-dev
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python >=3.10
+  - pip
+
+  # QC
+  - qcelemental >=0.27.1
+  - qcportal >=0.54.1
+  - openff-qcsubmit >=0.51.0
+  - openff-toolkit-base >=0.14.0
+  - rdkit
+  - yammbs
+
+  # other
+  - pandas
