@@ -49,7 +49,7 @@ parser.add_argument(
     "-np", "--nproc",
     type=int,
     default=1,
-    help="Number of processors to use.",
+    help="Number of processes to use.",
 )
 parser.add_argument(
     "--no-write-all",
