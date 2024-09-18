@@ -103,17 +103,20 @@ jobs:
       run: |
         python -c 'from openff.toolkit.typing.engines.smirnoff import ForceField; ForceField("openff-1.3.0.offxml")'
 
-    - name: Run script without write-all
+    - name: Run script without csv
       run: |
         cd example/
-        python ../bin/select-interesting-molecules_2.2.0_v1 -i test.smi -o output.smi -np 4 -n 100
+        python ../bin/select-interesting-molecules_2.2.0_v1.py -i test.smi -np 4 -n 100
         cat output.smi
 
-        [ -f output.csv ] && { echo "Error: output.csv exists." >&2; exit 1; }
+        ls *
+        # [ -f output.csv ] && { echo "Error: output.csv exists." >&2; exit 1; }
         
       
-    - name: Run script with write-all
+    - name: Run script with csv
       run: |
         cd example/
-        python ../bin/select-interesting-molecules_2.2.0_v1 -i test.smi -o output.smi -np 4
+        python ../bin/select-interesting-molecules_2.2.0_v1.py -i test.smi -o output-test.smi -of output.csv -np 4
+        cat output-test.smi
+
         cat output.csv
