@@ -47,7 +47,7 @@ cd diverse-dataset-discovery/bin
 or just download the file:
 
 ```
-curl https://raw.githubusercontent.com/openforcefield/diverse-dataset-discovery/main/bin/sort-by-rare-groups_2.2.0_v1.py > sort-by-rare-groups_2.2.0_v1.py
+curl https://raw.githubusercontent.com/openforcefield/diverse-dataset-discovery/main/bin/select-interesting-molecules_2.2.0_v1.py > select-interesting-molecules_2.2.0_v1.py
 ```
 
 ###  1.3. <a name='Runthetool'></a>Run the tool
@@ -57,7 +57,7 @@ The tool expects an input list of SMILES and outputs a CSV. More options are doc
 
 For example:
 ```
-python select-interesting-molecules_2.2.0_v1 -i my-input-smiles.smi -o selected.smi
+python select-interesting-molecules_2.2.0_v1.py -i my-input-smiles.smi -o selected.smi
 ```
 
 An example run, example inputs, and outputs are shown in [example/](example/).
