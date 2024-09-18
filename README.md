@@ -1,8 +1,9 @@
 # diverse-dataset-discovery
 
-This repo contains tools for evaluating datasets and picking out molecules that are not currently well-represented by our existing datasets.
+This repo contains tools for evaluating datasets and selecting molecules that contain chemistries
+where we are seeking to improve our data coverage.
 
-:rocket: We would love to get sent molecules that rank highly in rare groups (e.g. Count > 4). These molecules represent areas of chemistry for which we currently have low data coverage in both training and benchmarking our force fields. Any contributions would directly help us improve our force fields! :rocket:
+:rocket: We would love to get sent any selected molecules. These molecules represent areas of chemistry for which we currently have low data coverage in both training and benchmarking our force fields. Any contributions would directly help us improve our force fields! :rocket:
 
 **Contents**
 
@@ -56,17 +57,19 @@ The tool expects an input list of SMILES and outputs a CSV. More options are doc
 
 For example:
 ```
-python sort-by-rare-groups_2.2.0_v1.py -i my-input-smiles.smi -o sorted_by_rarity.csv -np 16 --no-write-all
+python select-interesting-molecules_2.2.0_v1 -i my-input-smiles.smi -o selected.smi -np 16
 ```
 
 An example run, example inputs, and outputs are shown in [example/](example/).
 
-The molecules in `sorted_by_rarity.csv` are ranked by the `Count` column, representing the number of matches to environments for which we have low coverage in our already available data. We search for these matches by either functional group, or force field parameters.
+The molecules in `selected.smi` match at least one environment for which we are
+seeking to increase coverage in our datasets. We search for these matches by either functional group, or force field parameters.
 
 
 ####  1.3.1. <a name='Moreoptions'></a> More options
 
-The tool comes with a number of options to control the output of the script and multiprocessing.
+The tool comes with a number of options to control the output of the script and multiprocessing. For example, `-n 100` returns only the top 100 molecules.
+
 These are listed in the help string as below.
 
 ```
@@ -96,7 +99,7 @@ options:
 
 ###  1.4. <a name='Contributingdataback'></a>Contributing data back
 
-OpenFF would love to receive molecules that rank highly in rare groups (e.g., Count > 4), as they represent areas of chemistry where we currently have limited data coverage for training and benchmarking our force fields. Your contributions would directly help us improve our force fields by filling these gaps and improving their accuracy. 
+OpenFF would love to receive molecules that are matches, as they represent areas of chemistry where we currently have limited data coverage for training and benchmarking our force fields. Your contributions would directly help us improve our force fields by filling these gaps and improving their accuracy. 
 
 Feel free to reach out to us on the Open Force Field Slack or by email.
 
