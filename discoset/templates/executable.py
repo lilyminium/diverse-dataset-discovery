@@ -169,6 +169,9 @@ def search_all_smiles(
     all_entries = sorted(all_entries, key=lambda x: x["Count"], reverse=True)
     df = pd.DataFrame(all_entries)
 
+    if not len(df):
+        print(f"No valid matches found -- skipping writing to {{output_file}}")
+
     keys = ["SMILES", "Count"]
     if write_all:
         keys += list(empty_entry.keys())
