@@ -240,6 +240,10 @@ def label_single_smiles(
         except Exception as e:
             return None
 
+    atomic_numbers = [atom.atomic_number for atom in mol.atoms]
+    if 0 in atomic_numbers:
+        return None
+
     entry = dict(empty_entry)
 
     # does it match any checkmol groups?
