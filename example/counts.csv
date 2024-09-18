@@ -1,8 +1,6 @@
 Acyl Bromide,0
 Acyl Fluoride,0
 Acyl Iodide,0
-Alkyl Halide,24
-Aryl Halide,76
 Carbodiimide,0
 Organolithium,0
 Organomagnesium,0
@@ -28,7 +26,7 @@ Sulfuric Acid Diester,0
 Sulfuryl Halide,0
 Enediol,0
 Phosphoric Acid Halide,0
-Carboxylic Acid Amide Acetal,0
+Carboxylic Acid Amide Acetal,6
 Carboxylic Acid Orthoester,0
 Sulfinic Acid Ester,0
 Sulfuric Acid,0
@@ -37,7 +35,7 @@ Thioketone,0
 Carbonic Acid Monoester,0
 Semicarbazide,0
 Sulfenic Acid,0
-Thiolactam,7
+Thiolactam,9
 b83,0
 b49,0
 b50,0

@@ -340,8 +340,6 @@ CHECKMOL_GROUPS = {
     "Acyl Bromide": "[#35:1]-[#6X3:2](=O)[#6,#1]",  # 0 matches
     "Acyl Fluoride": "[#9:1]-[#6X3:2](=O)[#6,#1]",  # 0 matches
     "Acyl Iodide": "[#53:1]-[#6X3:2](=O)[#6,#1]",  # 0 matches
-    "Alkyl Halide": "[#6X4:1]-[#9,#17,#35,#53:2]",  # 0 matches
-    "Aryl Halide": "[#6aR:1]-[#9,#17,#35,#53:2]",  # 0 matches
     "Carbodiimide": "[#1,#6]-[#7X2:1]=[#6X2:2]=[#7X2:3]-[#1,#6]",  # 0 matches
     "Organolithium": "[#6:1]-[#3:2]",  # 0 matches
     "Organomagnesium": "[#6:1]-[#12:2]",  # 0 matches
