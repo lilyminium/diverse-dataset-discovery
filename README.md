@@ -39,14 +39,14 @@ conda activate openff-toolkit
 Download the single-file script either by cloning the GitHub repo:
 
 ```
-git clone https://github.com/lilyminium/diverse-dataset-discovery.git
+git clone https://github.com/openforcefield/diverse-dataset-discovery.git
 cd diverse-dataset-discovery/bin
 ```
 
 or just download the file:
 
 ```
-curl https://raw.githubusercontent.com/lilyminium/diverse-dataset-discovery/main/bin/sort-by-rare-groups_2.2.0_v1.py > sort-by-rare-groups_2.2.0_v1.py
+curl https://raw.githubusercontent.com/openforcefield/diverse-dataset-discovery/main/bin/sort-by-rare-groups_2.2.0_v1.py > sort-by-rare-groups_2.2.0_v1.py
 ```
 
 ###  1.3. <a name='Runthetool'></a>Run the tool
