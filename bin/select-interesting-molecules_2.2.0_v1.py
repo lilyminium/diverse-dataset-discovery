@@ -156,11 +156,8 @@ def search_all_smiles(
         Threshold for considering a parameter 'rare', by default 1.
     only_top_n : int, optional
         Only write the top N entries to the output file. Default -1.
-    write_all : bool, optional
-        Write all columns to the CSV file. If False, only columns for SMILES
-        and the number of diverse environments will be written.
-        If True, all the rare groups that were searched for will be written
-        as well. Default True.
+    output_csv_file : str, optional
+        Path to the output CSV file. If not specified, this file will not be written.
     """
 
     # check inputs

@@ -3,7 +3,7 @@ EXECUTABLE_TEMPLATE = '''#!/usr/bin/env python3
 Date generated: {date}
 
 This one-file script takes an input of molecules in SMILES format
-and sorts them by the number of matches to rare environments.
+and selects molecules with chemistries where we are seeking to improve data coverage.
 
 The rare environments include a list of functional groups and {forcefield_name} parameters
 for which there is low coverage in our already available data.
@@ -14,6 +14,7 @@ import argparse
 import contextlib
 import functools
 import multiprocessing
+import pathlib
 import tempfile
 
 from openff.toolkit.topology import Molecule
@@ -22,16 +23,11 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(
     description=(
-        "Sort a list of SMILES strings by the number of matches to rare environments. "
-        "This takes in a list of SMILES strings and outputs a CSV file with the SMILES "
-        "strings and the number of matches to rare environments.\\n"
-        "The rare environments include a list of functional groups and {forcefield_name} parameters "
-        "for which there is low coverage in our already available data.\\n"
-        "The output CSV file will contain columns for SMILES strings (column: 'SMILES', type: str) "
-        "and the number of matches to rare environments (column: 'Count', type: int). "
-        "If the flag --no-write-all is set, only these two columns will be written. "
-        "If the flag is not set, all the rare environments that were searched for will be written "
-        "as well, with boolean values to indicate if they are present or not."
+        "Select molecules with chemistries where we are seeking to improve data coverage. "
+        "This takes in a multi-molecule SMILES file and outputs a multi-molecule SMILES file, "
+        "where each molecule is on a separate line. \\n"
+        "The chemistries we are selecting for include a list of functional groups "
+        "and {forcefield_name} parameters for which there is low coverage in our already available data."
     ),
     formatter_class=argparse.RawDescriptionHelpFormatter  # preserve newlines
 )
@@ -39,42 +35,56 @@ parser.add_argument(
     "-i", "--input",
     type=str,
     help="Path to a file containing SMILES strings, with one on each line.",
+    required=True
 )
 parser.add_argument(
     "-o", "--output",
     type=str,
-    help="Path to the output CSV file.",
+    default="output.smi",
+    help="Path to the output SMILES file. (Default: output.smi)",
+    required=False
+)
+parser.add_argument(
+    "-n", "--only-top-n",
+    type=int,
+    default=-1,
+    help=(
+        "Only write the top N molecules to the output file. "
+        "If not specified, write all molecules."
+    ),
+    required=False
 )
 parser.add_argument(
     "-np", "--nproc",
     type=int,
     default=1,
-    help="Number of processes to use.",
+    help="Number of processes to use. (Default: 1)",
+    required=False
 )
 parser.add_argument(
-    "--no-write-all",
-    action="store_false",
+    "-of", "--output-csv",
+    type=str,
+    default=None,
     help=(
-        "Write all columns to the CSV file. "
-        "If False, only columns for SMILES and the number "
-        "matches to rare groups will be written. "
-        "If True, all the rare groups that were searched for will be written."
-    )
+        "If specified, write matches to low coverage groups as a CSV to the given path. "
+        "Each group will be a column, with boolean values to indicate if this group is "
+        "present in the molecule. "
+        "Each row will correspond to a molecule in the input file. "
+        "A column 'Count' will be included to indicate the total number of matches. "
+        "If not specified, this file will not be written."
+    ),
+    required=False
 )
 parser.add_argument(
     "-c", "--count-threshold",
     type=int,
     default=1,
     help=(
-        "Threshold for considering a parameter 'rare'. "
-        "Only groups with a count greater than or equal to this threshold will be written."
-    )
-)
-parser.add_argument(
-    "-n", "--only-top-n",
-    type=int,
-    default=-1,
-    help="Only write the top N entries to the output file.",
+        "Number of matches to groups with low existing data coverage. "
+        "Only molecules with a count greater than or equal to this threshold "
+        "will be written as output. (Default: 1)"
+    ),
+    required=False
 )
 
 
@@ -87,12 +97,12 @@ def main():
         smiles,
         args.output,
         nprocs=args.nproc,
-        write_all=args.no_write_all,
+        output_csv_file=args.output_csv,
         count_threshold=args.count_threshold,
         only_top_n=args.only_top_n,
     )
 
-
+    
 def draw_checkmol():
     """
     Draw the checkmol SMARTS for verification.
@@ -120,7 +130,7 @@ def search_all_smiles(
     smiles,
     output_file: str,
     nprocs: int = 1,
-    write_all: bool = True,
+    output_csv_file: str = None,
     count_threshold: int = 1,
     only_top_n: int = -1,
 ):
@@ -139,14 +149,25 @@ def search_all_smiles(
         Threshold for considering a parameter 'rare', by default 1.
     only_top_n : int, optional
         Only write the top N entries to the output file. Default -1.
-    write_all : bool, optional
-        Write all columns to the CSV file. If False, only columns for SMILES
-        and the number of diverse environments will be written.
-        If True, all the rare groups that were searched for will be written
-        as well. Default True.
+    output_csv_file : str, optional
+        Path to the output CSV file. If not specified, this file will not be written.
     """
+
+    # check inputs
+    output_file = pathlib.Path(str(output_file))
+    output_file.parent.mkdir(exist_ok=True, parents=True)
+    if output_csv_file:
+        output_csv_file = pathlib.Path(str(output_csv_file))
+        output_csv_file.parent.mkdir(exist_ok=True, parents=True)
+    
+    nprocs = cast_or_error(nprocs, int, "-np/--nproc")
+    count_threshold = cast_or_error(count_threshold, int, "-c/--count-threshold")
+    only_top_n = cast_or_error(only_top_n, int, "-n/--only-top-n")
+    if only_top_n == 0:
+        raise ValueError("-n/--only-top-n cannot be 0")
+
     forcefield = load_forcefield()
-    empty_entry = {{ group: False for group in CHECKMOL_GROUPS }}
+    empty_entry = { group: False for group in CHECKMOL_GROUPS }
     for parameter_id in LOW_COVERAGE_PARAMETERS:
         empty_entry[parameter_id] = False
     all_entries = []
@@ -160,29 +181,33 @@ def search_all_smiles(
         all_entries = list(
             _progress_bar(
                 pool.imap(labeller, smiles),
-                desc="Labeling SMILES",
+                desc="Matching molecules",
                 total=len(smiles),
             )
         )
     all_entries = [x for x in all_entries if x is not None]
+    if not len(all_entries):
+        print(f"No valid matches found -- skipping writing to {{output_file}}")
+        return
 
     all_entries = sorted(all_entries, key=lambda x: x["Count"], reverse=True)
     df = pd.DataFrame(all_entries)
-
-    if not len(df):
-        print(f"No valid matches found -- skipping writing to {{output_file}}")
-
-    keys = ["SMILES", "Count"]
-    if write_all:
-        keys += list(empty_entry.keys())
-    
-    df = df[keys]
     df = df[df["Count"] >= count_threshold]
+
     if only_top_n > 0:
         df = df.head(only_top_n)
 
-    df.to_csv(output_file, index=False)
-    print(f"Wrote {{len(df)}} entries to {{output_file}}")
+    with open(output_file, "w") as f:
+        f.write("\\n".join(df["SMILES"].values))
+    print(f"Wrote {{len(df)}} molecules to {{output_file}}")
+
+    if output_csv_file:
+        keys = ["SMILES", "Count"]
+        keys += [col for col in df.columns if col not in keys]
+        df.to_csv(output_csv_file, index=False)
+        n_groups = len(df.columns) - 2
+        print(f"Wrote {{len(df)}} molecules and matches to {{n_groups}} groups to {{output_csv_file}}")
+
 
 
 
