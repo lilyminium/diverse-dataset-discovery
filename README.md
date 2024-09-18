@@ -31,7 +31,7 @@ If you do not have an OpenFF environment already set up, create one with the bel
 
 ```
 mamba create --name openff-toolkit -c conda-forge "openff-toolkit>0.10.0"
-conda activate openff-toolkit
+mamba activate openff-toolkit
 ```
 
 ###  1.2. <a name='Downloadthetool'></a>Download the tool
