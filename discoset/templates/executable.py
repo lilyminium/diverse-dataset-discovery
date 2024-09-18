@@ -62,7 +62,15 @@ parser.add_argument(
     required=False
 )
 parser.add_argument(
-    "-of", "--output-csv",
+    "-oc", "--output-count",
+    type=str,
+    default=None,
+    help=(
+        "If specified, write the counts of each group as a CSV to the given path. "
+    )
+)
+parser.add_argument(
+    "-of", "--output-full",
     type=str,
     default=None,
     help=(
@@ -88,7 +96,6 @@ parser.add_argument(
 )
 
 
-
 def main():
     args = parser.parse_args()
     with open(args.input) as f:
@@ -98,10 +105,12 @@ def main():
         smiles,
         args.output,
         nprocs=args.nproc,
-        output_csv_file=args.output_csv,
+        output_csv_file=args.output_full,
+        output_count_file=args.output_count,
         count_threshold=args.count_threshold,
         only_top_n=args.only_top_n,
     )
+
 
     
 def draw_checkmol():
@@ -127,11 +136,19 @@ def draw_checkmol():
     img.save("checkmol.png")
 
 
+def cast_or_error(value, type_, var_name):
+    try:
+        return type_(value)
+    except ValueError:
+        raise ValueError(f"Could not cast {{var_name}} to {{type_}}: {{value}}")
+
+
 def search_all_smiles(
     smiles,
     output_file: str,
     nprocs: int = 1,
     output_csv_file: str = None,
+    output_count_file: str = None,
     count_threshold: int = 1,
     only_top_n: int = -1,
 ):
@@ -152,6 +169,8 @@ def search_all_smiles(
         Only write the top N entries to the output file. Default -1.
     output_csv_file : str, optional
         Path to the output CSV file. If not specified, this file will not be written.
+    output_count_file : str, optional
+        Path to the output CSV file. If not specified, this file will not be written.
     """
 
     # check inputs
@@ -160,7 +179,10 @@ def search_all_smiles(
     if output_csv_file:
         output_csv_file = pathlib.Path(str(output_csv_file))
         output_csv_file.parent.mkdir(exist_ok=True, parents=True)
-    
+    if output_count_file:
+        output_count_file = pathlib.Path(str(output_count_file))
+        output_count_file.parent.mkdir(exist_ok=True, parents=True)
+        
     nprocs = cast_or_error(nprocs, int, "-np/--nproc")
     count_threshold = cast_or_error(count_threshold, int, "-c/--count-threshold")
     only_top_n = cast_or_error(only_top_n, int, "-n/--only-top-n")
@@ -168,7 +190,7 @@ def search_all_smiles(
         raise ValueError("-n/--only-top-n cannot be 0")
 
     forcefield = load_forcefield()
-    empty_entry = { group: False for group in CHECKMOL_GROUPS }
+    empty_entry = {{ group: False for group in CHECKMOL_GROUPS }}
     for parameter_id in LOW_COVERAGE_PARAMETERS:
         empty_entry[parameter_id] = False
     all_entries = []
@@ -202,10 +224,16 @@ def search_all_smiles(
         f.write("\\n".join(df["SMILES"].values))
     print(f"Wrote {{len(df)}} molecules to {{output_file}}")
 
+    core_keys = ["SMILES", "Count"]
+    added_keys = [col for col in df.columns if col not in core_keys]
+    if output_count_file:
+        counts = df[added_keys].sum()
+        counts.to_csv(output_count_file, header=False)
+        print(f"Wrote counts to {{output_count_file}}")
+
     if output_csv_file:
-        keys = ["SMILES", "Count"]
-        keys += [col for col in df.columns if col not in keys]
-        df.to_csv(output_csv_file, index=False)
+        keys = core_keys + added_keys
+        df[keys].to_csv(output_csv_file, index=False)
         n_groups = len(df.columns) - 2
         print(f"Wrote {{len(df)}} molecules and matches to {{n_groups}} groups to {{output_csv_file}}")
 

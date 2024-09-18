@@ -1,5 +1,6 @@
 import datetime
 import functools
+import json
 import pathlib
 import multiprocessing
 import textwrap
@@ -70,10 +71,6 @@ def get_all_inchis(
     """
     from qcportal import PortalClient
 
-    with open("tmp.dat", "r") as f:
-        all_inchis = f.read().split("\n")
-        return set(all_inchis)
-
     client = PortalClient("https://api.qcarchive.molssi.org:443", cache_dir=".")
     datasets = client.list_datasets()
 
@@ -98,9 +95,6 @@ def get_all_inchis(
     if verbose:
         print(f"Found {len(all_inchis)} unique InChI keys")
 
-    with open("tmp.dat", "w") as f:
-        f.write("\n".join(all_inchis))
-
     return all_inchis
 
 
@@ -114,6 +108,8 @@ def generate(
     forcefield_threshold: int = 10,
     checkmol_threshold: int = 10,
     version_number: int = 1,
+    output_checkmol_file: str = None,
+    output_forcefield_file: str = None,
 ):
     # get all inchi keys
     all_inchis = sorted(get_all_inchis(verbose=verbose))
@@ -169,6 +165,14 @@ def generate(
         for key, value in result["forcefield"].items():
             if value:
                 forcefield_results[key] += 1
+
+    if output_checkmol_file:
+        with open(output_checkmol_file, "w") as f:
+            json.dump(checkmol_results, f)
+    
+    if output_forcefield_file:
+        with open(output_forcefield_file, "w") as f:
+            json.dump(forcefield_results, f)
 
     lowest_checkmol_groups = sorted(
         checkmol_results.items(), key=lambda x: x[1],
@@ -232,7 +236,7 @@ def generate(
     output_directory.mkdir(exist_ok=True, parents=True)
     suffix = forcefield_path.split("-", 1)[1].split(".offxml")[0]
 
-    output_file = output_directory / f"sort-by-rare-groups_{suffix}_v{version_number}.py"
+    output_file = output_directory / f"select-interesting-molecules_{suffix}_v{version_number}.py"
     with open(output_file, "w") as file:
         file.write(executable_template)
     print(f"Script written to {output_file}")
