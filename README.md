@@ -57,7 +57,7 @@ The tool expects an input list of SMILES and outputs a CSV. More options are doc
 
 For example:
 ```
-python select-interesting-molecules_2.2.0_v1 -i my-input-smiles.smi -o selected.smi -np 16
+python select-interesting-molecules_2.2.0_v1 -i my-input-smiles.smi -o selected.smi
 ```
 
 An example run, example inputs, and outputs are shown in [example/](example/).
@@ -73,28 +73,52 @@ The tool comes with a number of options to control the output of the script and 
 These are listed in the help string as below.
 
 ```
-$ python bin/sort-by-rare-groups_2.2.0_v1.py --help
-usage: sort-by-rare-groups_2.2.0_v1.py [-h] [-i INPUT] [-o OUTPUT] [-np NPROC] [--no-write-all] [-c COUNT_THRESHOLD] [-n ONLY_TOP_N]
+$ python bin/select-interesting-molecules_2.2.0_v1.py --help
+usage: select-interesting-molecules_2.2.0_v1.py
+       [-h] -i INPUT [-o OUTPUT] [-n ONLY_TOP_N]
+       [-np NPROC] [-of OUTPUT_CSV] [-c COUNT_THRESHOLD]
 
-Sort a list of SMILES strings by the number of matches to rare environments. This takes in a list of SMILES strings and outputs a CSV file with the SMILES strings and the number of matches to rare environments.
-The rare environments include a list of functional groups and openff-2.2.0.offxml parameters for which there is low coverage in our already available data.
-The output CSV file will contain columns for SMILES strings (column: 'SMILES', type: str) and the number of matches to rare environments (column: 'Count', type: int). If the flag --no-write-all is set, only these two columns will be written. If the flag is not set, all the rare environments that were searched for will be written as well, with boolean values to indicate if they are present or not.
+Select molecules with chemistries where we are seeking to improve
+data coverage. This takes in a multi-molecule SMILES file and outputs
+a multi-molecule SMILES file, where each molecule is on a separate line.
+The chemistries we are selecting for include a list of functional groups
+and openff-2.2.0.offxml parameters for which there is low coverage
+in our already available data.
 
 options:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
-                        Path to a file containing SMILES strings, with one on each line.
+                        Path to a file containing SMILES
+                        strings, with one on each line.
   -o OUTPUT, --output OUTPUT
-                        Path to the output CSV file.
+                        Path to the output SMILES file.
+                        (Default: output.smi)
+  -n ONLY_TOP_N, --only-top-n ONLY_TOP_N
+                        Only write the top N molecules to
+                        the output file. If not specified,
+                        write all molecules.
   -np NPROC, --nproc NPROC
                         Number of processes to use.
-  --no-write-all        Write all columns to the CSV file. If False, only columns for SMILES and the number matches to rare groups will be
-                        written. If True, all the rare groups that were searched for will be written.
-  -c COUNT_THRESHOLD, --count-threshold COUNT_THRESHOLD
-                        Threshold for considering a parameter 'rare'. Only groups with a count greater than or equal to this threshold will be
+                        (Default: 1)
+  -of OUTPUT_CSV, --output-csv OUTPUT_CSV
+                        If specified, write matches to low
+                        coverage groups as a CSV to the
+                        given path. Each group will be a
+                        column, with boolean values to
+                        indicate if this group is present
+                        in the molecule. Each row will
+                        correspond to a molecule in the
+                        input file. A column 'Count' will
+                        be included to indicate the total
+                        number of matches. If not
+                        specified, this file will not be
                         written.
-  -n ONLY_TOP_N, --only-top-n ONLY_TOP_N
-                        Only write the top N entries to the output file.
+  -c COUNT_THRESHOLD, --count-threshold COUNT_THRESHOLD
+                        Number of matches to groups with
+                        low existing data coverage. Only
+                        molecules with a count greater than
+                        or equal to this threshold will be
+                        written as output. (Default: 1)
 ```
 
 ###  1.4. <a name='Contributingdataback'></a>Contributing data back
