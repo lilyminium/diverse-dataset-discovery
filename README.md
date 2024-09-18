@@ -5,6 +5,10 @@ where we are seeking to improve our data coverage.
 
 :rocket: We would love to get sent any selected molecules. These molecules represent areas of chemistry for which we currently have low data coverage in both training and benchmarking our force fields. Any contributions would directly help us improve our force fields! :rocket:
 
+Otherwise, if you let us know of any matched groups and the number of matches
+(which can be saved with the `-oc` flag), we would appreciate that in guiding our
+curation of public databases.
+
 **Contents**
 
 <!-- vscode-markdown-toc -->
@@ -74,51 +78,47 @@ These are listed in the help string as below.
 
 ```
 $ python bin/select-interesting-molecules_2.2.0_v1.py --help
-usage: select-interesting-molecules_2.2.0_v1.py
-       [-h] -i INPUT [-o OUTPUT] [-n ONLY_TOP_N]
-       [-np NPROC] [-of OUTPUT_CSV] [-c COUNT_THRESHOLD]
+usage: select-interesting-molecules_2.2.0_v1.py [-h] -i INPUT [-o OUTPUT]
+                                                [-n ONLY_TOP_N] [-np NPROC]
+                                                [-oc OUTPUT_COUNT]
+                                                [-of OUTPUT_FULL]
+                                                [-c COUNT_THRESHOLD]
 
-Select molecules with chemistries where we are seeking to improve
-data coverage. This takes in a multi-molecule SMILES file and outputs
-a multi-molecule SMILES file, where each molecule is on a separate line.
-The chemistries we are selecting for include a list of functional groups
-and openff-2.2.0.offxml parameters for which there is low coverage
-in our already available data.
+Select molecules with chemistries where we are seeking to improve data coverage.
+This takes in a multi-molecule SMILES file and outputs a multi-molecule SMILES
+file, where each molecule is on a separate line.
+The chemistries we are selecting for include a list of functional groups and
+openff-2.2.0.offxml parameters for which there is low coverage in our already
+available data.
 
 options:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
-                        Path to a file containing SMILES
-                        strings, with one on each line.
+                        Path to a file containing SMILES strings, with one on
+                        each line.
   -o OUTPUT, --output OUTPUT
-                        Path to the output SMILES file.
-                        (Default: output.smi)
+                        Path to the output SMILES file. (Default: output.smi)
   -n ONLY_TOP_N, --only-top-n ONLY_TOP_N
-                        Only write the top N molecules to
-                        the output file. If not specified,
-                        write all molecules.
+                        Only write the top N molecules to the output file. If
+                        not specified, write all molecules.
   -np NPROC, --nproc NPROC
-                        Number of processes to use.
-                        (Default: 1)
-  -of OUTPUT_CSV, --output-csv OUTPUT_CSV
-                        If specified, write matches to low
-                        coverage groups as a CSV to the
-                        given path. Each group will be a
-                        column, with boolean values to
-                        indicate if this group is present
-                        in the molecule. Each row will
-                        correspond to a molecule in the
-                        input file. A column 'Count' will
-                        be included to indicate the total
-                        number of matches. If not
-                        specified, this file will not be
-                        written.
+                        Number of processes to use. (Default: 1)
+  -oc OUTPUT_COUNT, --output-count OUTPUT_COUNT
+                        If specified, write the counts of each group as a CSV
+                        to the given path.
+  -of OUTPUT_FULL, --output-full OUTPUT_FULL
+                        If specified, write matches to low coverage groups as a
+                        CSV to the given path. Each group will be a column,
+                        with boolean values to indicate if this group is
+                        present in the molecule. Each row will correspond to a
+                        molecule in the input file. A column 'Count' will be
+                        included to indicate the total number of matches. If
+                        not specified, this file will not be written.
   -c COUNT_THRESHOLD, --count-threshold COUNT_THRESHOLD
-                        Number of matches to groups with
-                        low existing data coverage. Only
-                        molecules with a count greater than
-                        or equal to this threshold will be
-                        written as output. (Default: 1)
+                        Number of matches to groups with low existing data
+                        coverage. Only molecules with a count greater than or
+                        equal to this threshold will be written as output.
+                        (Default: 1)
 ```
 
 ###  1.4. <a name='Contributingdataback'></a>Contributing data back

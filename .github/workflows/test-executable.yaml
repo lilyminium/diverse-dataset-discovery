@@ -116,7 +116,7 @@ jobs:
     - name: Run script with csv
       run: |
         cd example/
-        python ../bin/select-interesting-molecules_2.2.0_v1.py -i test.smi -o output-test.smi -of output.csv -np 4
+        python ../bin/select-interesting-molecules_2.2.0_v1.py -i test.smi -o output-test.smi -of output.csv -c counts.csv -np 4
         cat output-test.smi
 
-        cat output.csv
+        cat counts.csv
