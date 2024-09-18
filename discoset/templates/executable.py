@@ -93,6 +93,7 @@ def main():
     args = parser.parse_args()
     with open(args.input) as f:
         smiles = [line.strip() for line in f]
+    smiles = [line for line in smiles if line]
     search_all_smiles(
         smiles,
         args.output,
