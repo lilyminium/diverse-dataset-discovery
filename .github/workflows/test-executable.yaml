@@ -106,12 +106,14 @@ jobs:
     - name: Run script without write-all
       run: |
         cd example/
-        python ../bin/sort-by-rare-groups_2.2.0_v1.py -i test.smi -o output.csv -np 4 --no-write-all
-        cat output.csv
+        python ../bin/select-interesting-molecules_2.2.0_v1 -i test.smi -o output.smi -np 4 -n 100
+        cat output.smi
+
+        [ -f output.csv ] && { echo "Error: output.csv exists." >&2; exit 1; }
         
       
     - name: Run script with write-all
       run: |
         cd example/
-        python ../bin/sort-by-rare-groups_2.2.0_v1.py -i test.smi -o output.csv -np 4
+        python ../bin/select-interesting-molecules_2.2.0_v1 -i test.smi -o output.smi -np 4
         cat output.csv
