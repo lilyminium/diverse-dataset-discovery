@@ -56,7 +56,7 @@ The tool expects an input list of SMILES and outputs a CSV. More options are doc
 
 For example:
 ```
-python bin/sort-by-rare-groups_2.2.0_v1.py -i my-input-smiles.smi -o sorted_by_rarity.csv -np 16 --no-write-all
+python sort-by-rare-groups_2.2.0_v1.py -i my-input-smiles.smi -o sorted_by_rarity.csv -np 16 --no-write-all
 ```
 
 An example run, example inputs, and outputs are shown in [example/](example/).
