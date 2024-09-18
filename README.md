@@ -56,18 +56,24 @@ curl https://raw.githubusercontent.com/openforcefield/diverse-dataset-discovery/
 
 ###  1.3. <a name='Runthetool'></a>Run the tool
 
-The tool expects an input list of SMILES and outputs a CSV. More options are documented in the help string (below).
+The tool expects an input list of SMILES and outputs a list of SMILES. More options are documented in the help string (below).
 
 
 For example:
 ```
-python select-interesting-molecules_2.2.0_v1.py -i my-input-smiles.smi -o selected.smi
+python select-interesting-molecules_2.2.0_v1.py -i my-input-smiles.smi -o selected.smi -np 16 -oc counts.csv
 ```
 
 An example run, example inputs, and outputs are shown in [example/](example/).
 
 The molecules in `selected.smi` match at least one environment for which we are
 seeking to increase coverage in our datasets. We search for these matches by either functional group, or force field parameters.
+
+The `-oc` flag writes an output CSV of how many matches to each group were found.
+This is also very useful information for us as it allows us to prioritize groups
+for improving data coverage.
+
+The `-np` flag controls how many processes to use.
 
 
 ####  1.3.1. <a name='Moreoptions'></a> More options
